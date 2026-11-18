@@ -55,7 +55,7 @@ crypto_wallet_sim/
 ## Compilação
 
 ```bash
-git clone <url-do-repositorio>
+git clone https://github.com/Daraki164/crypto_wallet_sim
 cd crypto_wallet_sim
 
 # Build padrão (otimizado)

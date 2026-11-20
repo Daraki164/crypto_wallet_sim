@@ -10,13 +10,15 @@ HIS_DIR = history
 
 MKDIR_CMD = mkdir -p
 RM_CMD = rm -rf
+LDLIBS = -lcrypto
 
 OBJS = \
 	$(OBJ_DIR)/wallet.o \
-	$(OBJ_DIR)/main.o \
 	$(OBJ_DIR)/log.o \
-	$(OBJ_DIR)/transaction.o \
 	$(OBJ_DIR)/history.o \
+	$(OBJ_DIR)/hash.o \
+	$(OBJ_DIR)/key.o \
+	$(OBJ_DIR)/main.o
 
 
 all: clean diretorio $(BIN_DIR)/main
@@ -26,7 +28,7 @@ debug: CFLAGS = $(DEBUG_FLAGS)
 debug: all
 
 $(BIN_DIR)/main: diretorio $(OBJS)
-	$(CC) $(CFLAGS) -o $@ $(OBJS)
+	$(CC) $(CFLAGS) -o $@ $(OBJS) $(LDLIBS)
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	$(CC) $(CFLAGS) -I$(INC_DIR) -c $< -o $@

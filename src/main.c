@@ -5,16 +5,28 @@
 
 
 
+
 int main(){
   vTrace_Init();
-  PSUSER daraki = psCreateUser("daraki", "chavepubica111", "chaveprivada222");
+  PSUSER daraki = psCreateUser("daraki", "daraki123");
+  if (daraki == NULL) {
+    vTrace_Close();
+    return 1;
+  }
+
   vLerDados(daraki->wallet);
 
 
-  FILE *historico = fCreateHistory("daraki");
-  historico = fopen("history/daraki", "a");
-  fprintf(historico, "teste1\n");
-  fclose(historico);
+  FILE *fHistorico = fCreateHistory("daraki");
+  if (fHistorico == NULL) {
+    vLog("erro ao abrir historico");
+    vFreeUser(daraki);
+    vTrace_Close();
+    return 1;
+}
+
+  fprintf(fHistorico, "teste1\n");
+  fclose(fHistorico);
 
 
 

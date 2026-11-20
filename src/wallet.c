@@ -4,9 +4,14 @@
 #include <stdio.h>
 #include <log.h>
 #include <history.h>
+#include <key.h>
 
+void vFreeUser(PSUSER User){
+  free(User->wallet);
+  free(User);
+}
 
-PSUSER psCreateUser(char *szNome, char *szIdPbc, char *szIdPvd){
+PSUSER psCreateUser(char *szNome, char *szSenha){
   PSUSER psUser = calloc(1, sizeof(STUSER));
 
   if(psUser == NULL){
@@ -15,7 +20,21 @@ PSUSER psCreateUser(char *szNome, char *szIdPbc, char *szIdPvd){
   }
 
   strncpy(psUser->szNome, szNome, sizeof(psUser->szNome)-1);
-  psUser->wallet = psCreateWallet(szIdPbc, szIdPvd);
+
+  if (!bGerarHashSenha(szSenha, psUser->szSenhaSalt, psUser->szSenhaHash)){
+    vLog("erro ao gerar hash da senha");
+    free(psUser);
+    return NULL;
+  }
+
+  psUser->wallet = psCreateWallet();
+
+  if (psUser->wallet == NULL) {
+    vLog("erro ao criar wallet");
+    free(psUser);
+    return NULL;
+  }
+
   psUser->fHistorico = fCreateHistory(psUser->szNome);
 
   return psUser;
@@ -23,10 +42,8 @@ PSUSER psCreateUser(char *szNome, char *szIdPbc, char *szIdPvd){
 
 void vLerDados(const PSWALLET Dono){
   printf(
-    "Chave Publica: %s\n"
-    "Chave Privada: %s\n",
-    Dono->szIdPbc,
-    Dono->szIdPvd
+    "Chave Publica: %s\n",
+    Dono->szIdPbc
   );
 
   int ii;
@@ -36,7 +53,7 @@ void vLerDados(const PSWALLET Dono){
 }
 
 
-PSWALLET psCreateWallet(char *szIdPbc, char *szIdPvd){
+PSWALLET psCreateWallet(){
   PSWALLET wallet = calloc(1, sizeof(STWALLET));
 
   if(wallet == NULL){
@@ -44,8 +61,11 @@ PSWALLET psCreateWallet(char *szIdPbc, char *szIdPvd){
     return NULL;
   }
 
-  strncpy(wallet->szIdPbc, szIdPbc, sizeof(wallet->szIdPbc)-1);
-  strncpy(wallet->szIdPvd, szIdPvd, sizeof(wallet->szIdPvd)-1);
+  if (!bGerarParChaves(wallet->szIdPbc, wallet->szIdPvd)){
+    vLog("erro ao gerar par de chaves");
+    free(wallet);
+    return NULL;
+  }
 
   int ii;
   for(ii = 0; ii < MAX_COINS; ii++){

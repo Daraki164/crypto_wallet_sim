@@ -10,6 +10,7 @@
 
   #include <stdint.h>
   #include <stdio.h>
+  #include <hash.h>
 
   typedef enum{
     DOLAR = 0,
@@ -36,10 +37,13 @@
     char szNome[MAX_LENGTH];
     PSWALLET wallet;
     FILE *fHistorico;
+    unsigned char szSenhaSalt[SALT_LEN];
+    unsigned char szSenhaHash[HASH_LEN];
   }STUSER, *PSUSER;
 
-  PSWALLET psCreateWallet(char *szIdPbc, char *szIdPvd);
-  PSUSER psCreateUser    (char *szNome, char *szIdPbc, char *szIdPvd);
+  PSWALLET psCreateWallet();
+  PSUSER psCreateUser    (char *szNome, char *szSenha);
   void vLerDados         (const PSWALLET Dono);
+  void vFreeUser         (PSUSER User);
 
 #endif

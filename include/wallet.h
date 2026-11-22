@@ -12,38 +12,38 @@
   #include <stdio.h>
   #include <hash.h>
 
-  typedef enum{
+  typedef enum eCoins{
     DOLAR = 0,
     REAL, 
     BTC, 
     ETH  
   }Coins;
 
-  typedef struct{
+  typedef struct STRUCT_BALANCE{
     uint8_t iCoin;
     uint64_t iQuant;
     char szSigla[8];
 
-  }STASSETBALANCE, *PSASSETBALANCE;
+  }STRUCT_BALANCE, *PSTRUCT_BALANCE;
 
-  typedef struct{
+  typedef struct STRUCT_WALLET{
     char szIdPbc[MAX_LENGTH];
     char szIdPvd[MAX_LENGTH];
-    STASSETBALANCE astAtivos[4];
+    STRUCT_BALANCE astAtivos[4];
 
-  }STWALLET, *PSWALLET;
+  }STRUCT_WALLET, *PSTRUCT_WALLET;
 
-  typedef struct{
+  typedef struct STRUCT_USER{
     char szNome[MAX_LENGTH];
-    PSWALLET wallet;
+    PSTRUCT_WALLET pstWallet;
     FILE *fHistorico;
     unsigned char szSenhaSalt[SALT_LEN];
     unsigned char szSenhaHash[HASH_LEN];
-  }STUSER, *PSUSER;
+  }STRUCT_USER, *PSTRUCT_USER;
 
-  PSWALLET psCreateWallet();
-  PSUSER psCreateUser    (char *szNome, char *szSenha);
-  void vLerDados         (const PSWALLET Dono);
-  void vFreeUser         (PSUSER User);
+  PSTRUCT_WALLET pstCreateWallet();
+  PSTRUCT_USER pstCreateUser    (char *szNome, char *szSenha);
+  void vLerDados         (const PSTRUCT_WALLET pstDono);
+  void vFreeUser         (PSTRUCT_USER pstUser);
 
 #endif

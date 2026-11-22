@@ -6,64 +6,64 @@
 #include <history.h>
 #include <key.h>
 
-void vFreeUser(PSUSER User){
-  free(User->wallet);
-  free(User);
+void vFreeUser(PSTRUCT_USER pstUser){
+  free(pstUser->pstWallet);
+  free(pstUser);
 }
 
-PSUSER psCreateUser(char *szNome, char *szSenha){
-  PSUSER psUser = calloc(1, sizeof(STUSER));
+PSTRUCT_USER pstCreateUser(char *szNome, char *szSenha){
+  PSTRUCT_USER pstUser = calloc(1, sizeof(STRUCT_USER));
 
-  if(psUser == NULL){
-    vLog("erro de alocação, psUser == NULL");
+  if(pstUser == NULL){
+    vLog("erro de alocação, pstUser == NULL");
     return NULL;
   }
 
-  strncpy(psUser->szNome, szNome, sizeof(psUser->szNome)-1);
+  strncpy(pstUser->szNome, szNome, sizeof(pstUser->szNome)-1);
 
-  if (!bGerarHashSenha(szSenha, psUser->szSenhaSalt, psUser->szSenhaHash)){
+  if(!bGerarHashSenha(szSenha, pstUser->szSenhaSalt, pstUser->szSenhaHash)){
     vLog("erro ao gerar hash da senha");
-    free(psUser);
+    free(pstUser);
     return NULL;
   }
 
-  psUser->wallet = psCreateWallet();
+  pstUser->pstWallet = pstCreateWallet();
 
-  if (psUser->wallet == NULL) {
-    vLog("erro ao criar wallet");
-    free(psUser);
+  if(pstUser->pstWallet == NULL){
+    vLog("erro ao criar pstWallet");
+    free(pstUser);
     return NULL;
   }
 
-  psUser->fHistorico = fCreateHistory(psUser->szNome);
+  pstUser->fHistorico = pfCreateHistory(pstUser->szNome);
 
-  return psUser;
+  return pstUser;
 }
 
-void vLerDados(const PSWALLET Dono){
+void vLerDados(const PSTRUCT_WALLET pstDono){
   printf(
     "Chave Publica: %s\n",
-    Dono->szIdPbc
+    pstDono->szIdPbc
   );
 
   int ii;
   for(ii = 0; ii < MAX_COINS; ii++){
-    printf("%ld de %s\n", Dono->astAtivos[ii].iQuant, Dono->astAtivos[ii].szSigla);
+    printf("%ld de %s\n", pstDono->astAtivos[ii].iQuant, pstDono->astAtivos[ii].szSigla);
   }
 }
 
 
-PSWALLET psCreateWallet(){
-  PSWALLET wallet = calloc(1, sizeof(STWALLET));
+PSTRUCT_WALLET pstCreateWallet(){
+  PSTRUCT_WALLET pstWallet = calloc(1, sizeof(STRUCT_WALLET));
 
-  if(wallet == NULL){
-    vLog("erro de alocação, wallet == NULL");
+  if(pstWallet == NULL){
+    vLog("erro de alocação, pstWallet == NULL");
     return NULL;
   }
 
-  if (!bGerarParChaves(wallet->szIdPbc, wallet->szIdPvd)){
+  if (!bGerarParChaves(pstWallet->szIdPbc, pstWallet->szIdPvd)){
     vLog("erro ao gerar par de chaves");
-    free(wallet);
+    free(pstWallet);
     return NULL;
   }
 
@@ -71,31 +71,31 @@ PSWALLET psCreateWallet(){
   for(ii = 0; ii < MAX_COINS; ii++){
     switch(ii){
       case DOLAR:
-        strncpy(wallet->astAtivos[ii].szSigla, USD_S, sizeof(wallet->astAtivos[ii].szSigla));
-        wallet->astAtivos[ii].iCoin = DOLAR;
-        wallet->astAtivos[ii].iQuant = 1000;
+        strncpy(pstWallet->astAtivos[ii].szSigla, USD_S, sizeof(pstWallet->astAtivos[ii].szSigla));
+        pstWallet->astAtivos[ii].iCoin = DOLAR;
+        pstWallet->astAtivos[ii].iQuant = 1000;
         break;
 
       case REAL:
-        strncpy(wallet->astAtivos[ii].szSigla, RS_S, sizeof(wallet->astAtivos[ii].szSigla)-1);
-        wallet->astAtivos[ii].iCoin = REAL;
-        wallet->astAtivos[ii].iQuant = 1000;
+        strncpy(pstWallet->astAtivos[ii].szSigla, RS_S, sizeof(pstWallet->astAtivos[ii].szSigla)-1);
+        pstWallet->astAtivos[ii].iCoin = REAL;
+        pstWallet->astAtivos[ii].iQuant = 1000;
         break;
 
       case BTC:
-        strncpy(wallet->astAtivos[ii].szSigla, BTC_S, sizeof(wallet->astAtivos[ii].szSigla)-1);
-        wallet->astAtivos[ii].iCoin = BTC;
-        wallet->astAtivos[ii].iQuant = 1000;
+        strncpy(pstWallet->astAtivos[ii].szSigla, BTC_S, sizeof(pstWallet->astAtivos[ii].szSigla)-1);
+        pstWallet->astAtivos[ii].iCoin = BTC;
+        pstWallet->astAtivos[ii].iQuant = 1000;
         break;
 
       case ETH:
-        strncpy(wallet->astAtivos[ii].szSigla, ETH_S, sizeof(wallet->astAtivos[ii].szSigla)-1);
-        wallet->astAtivos[ii].iCoin = ETH;
-        wallet->astAtivos[ii].iQuant = 1000;
+        strncpy(pstWallet->astAtivos[ii].szSigla, ETH_S, sizeof(pstWallet->astAtivos[ii].szSigla)-1);
+        pstWallet->astAtivos[ii].iCoin = ETH;
+        pstWallet->astAtivos[ii].iQuant = 1000;
         break;
     }
   }
 
-  return wallet;
+  return pstWallet;
 
 }

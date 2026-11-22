@@ -60,7 +60,7 @@ int bProximoIdTransacao(uint64_t *pId){
   fflush(f);
   fclose(f);
 
-  if (rename(SEQ_TMP, SEQ_FILE) != 0) {
+  if(rename(SEQ_TMP, SEQ_FILE) != 0){
     remove(SEQ_TMP);
     return 0;
   }

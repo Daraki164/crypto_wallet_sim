@@ -4,5 +4,5 @@
 
   #include <stdio.h>
 
-  FILE *fCreateHistory(char *szNome);
+  FILE *pfCreateHistory(char *szNome);
 #endif

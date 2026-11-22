@@ -4,7 +4,7 @@
 #include <log.h>
 #include <wallet.h>
 
-FILE *fCreateHistory(char *szNome){
+FILE *pfCreateHistory(char *szNome){
   char szText[MAX_LENGTH];
   if(strlen(szNome) + strlen("history/.txt") >= MAX_LENGTH){
     vLog("nome muito grade");

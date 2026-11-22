@@ -4,16 +4,16 @@
 #include <openssl/sha.h>
 
 int bGerarParChaves(char szPbc[KEY_HEX_LEN], char szPvd[KEY_HEX_LEN]){
-  unsigned char pvd[KEY_BYTES];
-  unsigned char pbc[KEY_BYTES];
+  unsigned char ucPvd[KEY_BYTES];
+  unsigned char ucPbc[KEY_BYTES];
 
-  if (RAND_bytes(pvd, KEY_BYTES) != 1)
+  if (RAND_bytes(ucPvd, KEY_BYTES) != 1)
       return 0;
 
-  SHA256(pvd, KEY_BYTES, pbc);
+  SHA256(ucPvd, KEY_BYTES, ucPbc);
 
-  vHexEncode(pvd, KEY_BYTES, szPvd);
-  vHexEncode(pbc, KEY_BYTES, szPbc);
+  vHexEncode(ucPvd, KEY_BYTES, szPvd);
+  vHexEncode(ucPbc, KEY_BYTES, szPbc);
 
   return 1;
 }

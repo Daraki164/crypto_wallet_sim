@@ -84,7 +84,7 @@ typedef enum {
 
 > A posição do enum é usada como índice em `astAtivos[]`, portanto a ordem é relevante.
 
-### 3.2 Struct `STASSETBALANCE`
+### 3.2 Struct `STRUCT_BALANCE`
 
 Representa o saldo de um ativo.
 
@@ -93,7 +93,7 @@ typedef struct {
     uint8_t  iCoin;       // identificador do ativo (Coins)
     uint64_t iQuant;      // saldo na menor fração do ativo
     char     szSigla[8];  // sigla textual (ex.: "USD")
-} STASSETBALANCE, *PSASSETBALANCE;
+} STRUCT_BALANCE, *PSTRUCT_BALANCE;
 ```
 
 | Campo | Tipo | Descrição |
@@ -102,7 +102,7 @@ typedef struct {
 | `iQuant` | `uint64_t` | Quantidade inteira na menor unidade (centavos / Satoshis). |
 | `szSigla` | `char[8]` | Sigla exibida ao usuário. |
 
-### 3.3 Struct `STWALLET`
+### 3.3 Struct `STRUCT_WALLET`
 
 Estrutura principal da carteira.
 
@@ -110,15 +110,15 @@ Estrutura principal da carteira.
 typedef struct {
     char           szIdPbc[65];  // chave pública (até 64 caracteres + '\0')
     char           szIdPvd[65];  // chave privada (até 64 caracteres + '\0')
-    STASSETBALANCE astAtivos[4];  // um saldo por ativo
-} STWALLET, *PSWALLET;
+    STRUCT_BALANCE astAtivos[4];  // um saldo por ativo
+} STRUCT_WALLET, *PSTRUCT_WALLET;
 ```
 
 | Campo | Tipo | Descrição |
 |-------|------|-----------|
 | `szIdPbc` | `char[65]` | Identificador/chave pública. |
 | `szIdPvd` | `char[65]` | Identificador/chave privada. |
-| `astAtivos` | `STASSETBALANCE[4]` | Vetor fixo de saldos, indexado por `Coins`. |
+| `astAtivos` | `STRUCT_BALANCE[4]` | Vetor fixo de saldos, indexado por `Coins`. |
 
 O nome `astAtivos` usa o prefixo `ast` (array de struct) por convenção de nomenclatura húngara.
 
@@ -126,10 +126,10 @@ O nome `astAtivos` usa o prefixo `ast` (array de struct) por convenção de nome
 
 ## 4. Referência da API
 
-### 4.1 `psCreateWallet`
+### 4.1 `pstCreateWallet`
 
 ```c
-PSWALLET psCreateWallet(char szIdPbc[65], char szIdPvd[65]);
+PSTRUCT_WALLET pstCreateWallet(char szIdPbc[65], char szIdPvd[65]);
 ```
 
 Cria e inicializa uma carteira em memória.
@@ -143,12 +143,12 @@ Cria e inicializa uma carteira em memória.
 
 **Retorno**
 
-- Ponteiro para `STWALLET` alocada dinamicamente em caso de sucesso.
+- Ponteiro para `STRUCT_WALLET` alocada dinamicamente em caso de sucesso.
 - `NULL` em caso de falha de alocação (comportamento desejado; ver [Limitações](#9-estado-atual-e-limitações)).
 
 **Comportamento**
 
-1. Aloca `sizeof(STWALLET)` com `malloc`.
+1. Aloca `sizeof(STRUCT_WALLET)` com `malloc`.
 2. Copia as chaves com `strncpy`, limitando ao tamanho do buffer menos um.
 3. Percorre `MAX_COINS` posições e inicializa cada ativo com sigla, código e saldo zero.
 
@@ -160,7 +160,7 @@ Cria e inicializa uma carteira em memória.
 ### 4.2 `vLerDados`
 
 ```c
-void vLerDados(const PSWALLET Dono);
+void vLerDados(const PSTRUCT_WALLET Dono);
 ```
 
 Exibe no `stdout` as chaves e os saldos de todos os ativos da carteira.
@@ -193,8 +193,8 @@ O saldo é impresso com `%ld` sobre um campo `uint64_t` — ponto de atenção d
 ```text
 main()
   │
-  ├─▶ psCreateWallet("chavepubica111", "chaveprivada222")
-  │     ├─ malloc(STWALLET)
+  ├─▶ pstCreateWallet("chavepubica111", "chaveprivada222")
+  │     ├─ malloc(STRUCT_WALLET)
   │     ├─ copia chaves
   │     └─ inicializa astAtivos[0..3]
   │
@@ -231,15 +231,15 @@ A conversão para exibição (dividir pela escala e formatar) deverá ser feita 
 
 ### Alocação
 
-A carteira é alocada dinamicamente em `psCreateWallet`:
+A carteira é alocada dinamicamente em `pstCreateWallet`:
 
 ```c
-PSWALLET wallet = (PSWALLET)malloc(sizeof(STWALLET));
+PSTRUCT_WALLET wallet = (PSTRUCT_WALLET)malloc(sizeof(STRUCT_WALLET));
 ```
 
 ### Propriedade
 
-- Quem chama `psCreateWallet` torna-se dono do ponteiro.
+- Quem chama `pstCreateWallet` torna-se dono do ponteiro.
 - A liberação deve ser feita com `free` quando a carteira não for mais necessária.
 
 ### Riscos atuais
@@ -252,7 +252,7 @@ PSWALLET wallet = (PSWALLET)malloc(sizeof(STWALLET));
 
 - Verificar `wallet == NULL` e retornar `NULL`.
 - Garantir `wallet->szIdPbc[64] = '\0';` e equivalentes após a cópia.
-- Adicionar uma função `void vFreeWallet(PSWALLET w)` para encapsular a liberação.
+- Adicionar uma função `void vFreeWallet(PSTRUCT_WALLET w)` para encapsular a liberação.
 
 ---
 
@@ -297,7 +297,7 @@ gdb ./bin/main
 Sugestões de uso:
 
 ```gdb
-break psCreateWallet
+break pstCreateWallet
 run
 next
 print *wallet
@@ -318,7 +318,7 @@ Esta seção documenta o comportamento real do código na Fase 1.
 
 | # | Item | Descrição | Impacto |
 |---|------|-----------|---------|
-| 1 | `malloc` sem verificação | `psCreateWallet` não trata falha de alocação. | Potencial *segfault* em memória insuficiente. |
+| 1 | `malloc` sem verificação | `pstCreateWallet` não trata falha de alocação. | Potencial *segfault* em memória insuficiente. |
 | 2 | Incompatibilidade de assinatura | Protótipo usa `char[65]`, definição usa `char[64]`. | Aviso `-Warray-parameter`; contrato ambíguo. |
 | 3 | `printf` com tipo incorreto | `%ld` para `uint64_t` (ideal: `PRIu64`). | Comportamento indefinido em plataformas onde `long` ≠ 64 bits. |
 | 4 | Terminador nulo | `strncpy` não garante `'\0'`. | Risco de leitura fora do buffer em `printf`. |
@@ -379,9 +379,9 @@ Esta seção documenta o comportamento real do código na Fase 1.
 
 | Elemento | Convenção | Exemplo |
 |----------|-----------|---------|
-| Structs | `ST` + nome em PascalCase | `STWALLET` |
-| Ponteiros para struct | `PS` + nome | `PSWALLET` |
-| Funções | prefixo de tipo (`v`, `ps`, `i`, `b`) + CamelCase | `psCreateWallet` |
+| Structs | `ST` + nome em PascalCase | `STRUCT_WALLET` |
+| Ponteiros para struct | `PS` + nome | `PSTRUCT_WALLET` |
+| Funções | prefixo de tipo (`v`, `ps`, `i`, `b`) + CamelCase | `pstCreateWallet` |
 | Variáveis locais | prefixo húngaro + CamelCase | `szIdPbc`, `iQuant`, `ii` |
 | Constantes | `UPPER_SNAKE_CASE` | `MAX_COINS` |
 | Cabeçalhos | guardas `#ifndef` | `WALLET_H` |

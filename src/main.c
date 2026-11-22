@@ -8,16 +8,16 @@
 
 int main(){
   vTrace_Init();
-  PSUSER daraki = psCreateUser("daraki", "daraki123");
+  PSTRUCT_USER daraki = pstCreateUser("daraki", "daraki123");
   if (daraki == NULL) {
     vTrace_Close();
     return 1;
   }
 
-  vLerDados(daraki->wallet);
+  vLerDados(daraki->pstWallet);
 
 
-  FILE *fHistorico = fCreateHistory("daraki");
+  FILE *fHistorico = pfCreateHistory("daraki");
   if (fHistorico == NULL) {
     vLog("erro ao abrir historico");
     vFreeUser(daraki);

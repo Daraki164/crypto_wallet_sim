@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <time.h>
-#include "log.h"
+#include <log.h>
 
 static FILE *pfLog = NULL;
 

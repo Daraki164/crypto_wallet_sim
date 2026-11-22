@@ -4,7 +4,7 @@
 #include <string.h>
 
 
-PSTRANSACTION psCreateTransaction(
+PSTRUCT_TRANSACTION psCreateTransaction(
     TIPO_TRANSACAO eTipo,
     uint8_t eCoin,
     uint64_t iValor,
@@ -12,19 +12,19 @@ PSTRANSACTION psCreateTransaction(
     const char *szDestino
 ){
 
-  if (szOrigem == NULL || szDestino == NULL)
+  if(szOrigem == NULL || szDestino == NULL)
     return NULL;
 
-  if (eCoin < 0 || eCoin >= MAX_COINS)
+  if(eCoin >= MAX_COINS)
     return NULL;
 
 
-  PSTRANSACTION t = calloc(1, sizeof(STTRANSACTION));
-  if (t == NULL) return NULL;
+  PSTRUCT_TRANSACTION t = calloc(1, sizeof(STRUCT_TRANSACTION));
+  if(t == NULL) return NULL;
 
-  if (!bProximoIdTransacao(&t->iId)){
-      free(t);
-      return NULL;
+  if(!bProximoIdTransacao(&t->iId)){
+    free(t);
+    return NULL;
   }
 
   t->eTipo = eTipo;
@@ -69,7 +69,7 @@ int bProximoIdTransacao(uint64_t *pId){
   return 1;
 }
 
-void vFreeTransaction(PSTRANSACTION Transacao){
+void vFreeTransaction(PSTRUCT_TRANSACTION Transacao){
   free(Transacao);
 }
 

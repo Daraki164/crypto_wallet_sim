@@ -15,7 +15,7 @@
     TRANSFERENCIA
   }TIPO_TRANSACAO;
 
-  typedef enum {
+  typedef enum{
     TRANSACAO_OK = 0,
     TRANSACAO_ERRO_PONTEIRO,
     TRANSACAO_ERRO_ATIVO,
@@ -25,7 +25,7 @@
     TRANSACAO_ERRO_HISTORICO
   }STATUS_TRANSACAO;
 
-  typedef struct {
+  typedef struct STRUCT_TRANSACTION{
     uint64_t       iId;
     TIPO_TRANSACAO eTipo;
     uint8_t        iCoin;
@@ -33,9 +33,9 @@
     char           szOrigem[MAX_LENGTH];
     char           szDestino[MAX_LENGTH];
     time_t         tTimestamp;
-  }STTRANSACTION, *PSTRANSACTION;
+  }STRUCT_TRANSACTION, *PSTRUCT_TRANSACTION;
 
-  PSTRANSACTION psCreateTransaction(
+  PSTRUCT_TRANSACTION psCreateTransaction(
     TIPO_TRANSACAO eTipo,
     uint8_t eCoin,
     uint64_t iValor,
@@ -43,7 +43,7 @@
     const char *szDestino
   );
 
-  void vFreeTransaction        (PSTRANSACTION Transacao);
+  void vFreeTransaction        (PSTRUCT_TRANSACTION Transacao);
   const char *szStatusTransacao(STATUS_TRANSACAO eStatus);
   int bProximoIdTransacao      (uint64_t *pId);
 

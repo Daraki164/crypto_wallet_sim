@@ -2,19 +2,19 @@
 #include <stdlib.h>
 #include <string.h>
 #include <log.h>
+#include <wallet.h>
 
 FILE *fCreateHistory(char *szNome){
-  char *szText = calloc(128, sizeof(char));
-  if(strlen(szNome) + strlen("history/.txt") >= sizeof(szText)){
+  char szText[MAX_LENGTH];
+  if(strlen(szNome) + strlen("history/.txt") >= MAX_LENGTH){
     vLog("nome muito grade");
-    free(szText);
+
     return NULL;
   }
 
-  snprintf(szText, strlen(szNome), "history/%s.txt", szNome);
+  snprintf(szText, MAX_LENGTH, "history/%s.txt", szNome);
   
   FILE *fHistory = fopen(szText, "a+");
 
-  free(szText);
   return fHistory;
 }
